@@ -1,5 +1,6 @@
 package com.berru.app.springbooth2.repositories;
 
+import com.berru.app.springbooth2.entities.Music;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

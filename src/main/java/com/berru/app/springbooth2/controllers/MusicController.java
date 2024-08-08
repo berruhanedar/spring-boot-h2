@@ -1,5 +1,7 @@
 package com.berru.app.springbooth2.controllers;
 
+import com.berru.app.springbooth2.entities.Music;
+import com.berru.app.springbooth2.services.MusicService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,3 +45,4 @@ public class MusicController {
     public List<Music> getByGenre(@PathVariable int genreId) {
         return musicService.getByGenre(genreId);
     }
+}

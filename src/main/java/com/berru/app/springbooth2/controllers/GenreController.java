@@ -2,6 +2,8 @@ package com.berru.app.springbooth2.controllers;
 
 
 
+import com.berru.app.springbooth2.entities.Genre;
+import com.berru.app.springbooth2.services.GenreService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
