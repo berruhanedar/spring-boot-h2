@@ -5,6 +5,8 @@ import com.berru.app.springbooth2.entities.Music;
 import com.berru.app.springbooth2.repositories.GenreRepository;
 import com.berru.app.springbooth2.repositories.MusicRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -18,35 +20,57 @@ public class MusicService {
         this.genreRepository = genreRepository;
     }
 
-    public Music save(Music music) {
+    public ResponseEntity<Music> save(Music music) {
+        // Verilen Genre ID'sine sahip bir Genre nesnesi arar. Eğer bulunamazsa, bir hata fırlatılır.
         Genre genre = genreRepository.findById(music.getGenre().getId())
                 .orElseThrow(() -> new RuntimeException("Genre not found"));
+
+        // Bulunan Genre nesnesini müzik nesnesine atar.
         music.setGenre(genre);
-        return musicRepository.save(music);
+
+        // Müzik adı yalnızca harfler ve boşluklar içermiyorsa bir hata fırlatılır.
+        if (!music.getName().matches("^[a-zA-Z ]+$")) {
+            throw new IllegalArgumentException("Music name can only contain letters and spaces.");
+        }
+
+        // Müzik nesnesini veritabanına kaydeder ve HTTP 201 (Created) yanıtı döner.
+        Music savedMusic = musicRepository.save(music);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedMusic);
     }
 
-    public List<Music> list() {
-        return musicRepository.findAll();
+
+    public ResponseEntity<List<Music>> list() {
+        List<Music> musics = musicRepository.findAll();
+        return ResponseEntity.ok(musics);
     }
 
-    public Music getById(int id) {
-        return musicRepository.findById(id).orElseThrow(() -> new RuntimeException("Music not found"));
+    public ResponseEntity<Music> getById(int id) {
+        return musicRepository.findById(id)
+                .map(music -> ResponseEntity.ok(music))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    public Music update(int id, Music music) {
-        Music existingMusic = musicRepository.findById(id).orElseThrow(() -> new RuntimeException("Music not found"));
+    public ResponseEntity<Music> update(int id, Music music) {
+        Music existingMusic = musicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music not found"));
         existingMusic.setName(music.getName());
         Genre genre = genreRepository.findById(music.getGenre().getId())
                 .orElseThrow(() -> new RuntimeException("Genre not found"));
         existingMusic.setGenre(genre);
-        return musicRepository.save(existingMusic);
+        Music updatedMusic = musicRepository.save(existingMusic);
+        return ResponseEntity.ok(updatedMusic);
     }
 
-    public void delete(int id) {
-        musicRepository.deleteById(id);
+    public ResponseEntity<Void> delete(int id) {
+        if (musicRepository.existsById(id)) {
+            musicRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    public List<Music> getByGenre(int genreId) {
-        return musicRepository.findByGenreId(genreId);
+    public ResponseEntity<List<Music>> getByGenre(int genreId) {
+        List<Music> musics = musicRepository.findByGenreId(genreId);
+        return ResponseEntity.ok(musics);
     }
 }

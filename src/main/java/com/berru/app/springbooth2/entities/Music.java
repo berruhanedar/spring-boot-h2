@@ -1,7 +1,5 @@
 package com.berru.app.springbooth2.entities;
 
-//Entity katmanını database tabloları gibi düşün
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -9,19 +7,20 @@ import lombok.Data;
 import java.util.List;
 
 
-@Entity //Springe buranın bir entity olduğunu anlatmak için @Entity anotasyonunu ekliyoruz
-@Data  //Entitye göre veri alacağımız için data anotasyonu ekliyoruz
+@Entity
+@Data
 
-public class Music { //Classımız tablo içine yazacaklarımız columnlarımız olacak
-    @Id // Veritabanında primary key olarak id kullanacağımız için @Id anotasyonunu ekliyoruz
-    @GeneratedValue(strategy = GenerationType.AUTO) //bir sütunun otomatik olarak değerinin oluşturulmasını sağlar. Genellikle birincil anahtar (primary key) alanları için kullanılır
+public class Music {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(nullable = false , unique=true ) //Kısıtlamalar için kullanırız
+    @Column(nullable = false , unique=true )
     private String name ;
 
     @ManyToOne
-    @JoinColumn(name = "genre_id")
+    @JoinColumn(name = "genre_id") // @JoinColumn(name = "genre_id"): genre alanı için veritabanında genre_id adında bir foreign key sütunu oluşturur.
+    //hangi sütunun yabancı anahtar (foreign key) olarak kullanılacağını belirtmek için kullanılır
     @JsonBackReference
     private Genre genre;
 
