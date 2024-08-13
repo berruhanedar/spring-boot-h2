@@ -1,7 +1,7 @@
-package com.berru.app.springbooth2.controllers;
+package com.berru.app.springbooth2.controller;
 
-import com.berru.app.springbooth2.entities.Music;
-import com.berru.app.springbooth2.services.MusicService;
+import com.berru.app.springbooth2.entity.Music;
+import com.berru.app.springbooth2.service.MusicService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

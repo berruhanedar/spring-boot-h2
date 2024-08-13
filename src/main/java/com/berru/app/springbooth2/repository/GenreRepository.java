@@ -1,9 +1,9 @@
-package com.berru.app.springbooth2.repositories;
+package com.berru.app.springbooth2.repository;
 //Veri erişim katmanı
 //Repository database tarafıdır
 //Repository katmanı, veri tabanı işlemlerini yönetir. Veriyi kaydetme, güncelleme, silme ve alma gibi işlemleri içerir.
 
-import com.berru.app.springbooth2.entities.Genre;
+import com.berru.app.springbooth2.entity.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 //Java Liste Yapısı: Java'da, List<Music> türündeki alan, bu ilişkileri yönetmek ve veritabanında Genre nesnesine ait Music nesnelerini topluca almak, eklemek veya güncellemek için kullanılır. Liste, ORM (Object-Relational Mapping) ile veritabanı ile olan ilişkileri Java nesneleri seviyesinde yönetir.
 

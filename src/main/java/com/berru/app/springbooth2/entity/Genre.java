@@ -1,4 +1,4 @@
-package com.berru.app.springbooth2.entities;
+package com.berru.app.springbooth2.entity;
 //Entity layer projenin yapı taşıdır . Entity'leri database tabloları gibi düşün
 //Code First yaklaşımı ile ilerliyoruz yani bu tarafa bakıp arkada database JPA yardımıyla oluşturmuş olacak projemizi
 

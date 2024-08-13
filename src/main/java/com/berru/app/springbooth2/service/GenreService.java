@@ -1,13 +1,15 @@
-package com.berru.app.springbooth2.services;
+package com.berru.app.springbooth2.service;
 //"BUSINESS LOGIC"" olduğu kısımdır = VERİLER BURADA İŞLENİR!!!!!
 //dışardan controllera gelen isteği alıp kendi business logicimize entegre edip verileri düzenlediğmiz dönüş değerini oluşturacağımız yapı olacak
 
-import com.berru.app.springbooth2.entities.Genre;
-import com.berru.app.springbooth2.repositories.GenreRepository;
+import com.berru.app.springbooth2.entity.Genre;
+import com.berru.app.springbooth2.repository.GenreRepository;
 import org.springframework.http.HttpStatus; // HTTP durum kodlarını (status codes) temsil eden HttpStatus sınıfını projeye dahil eder
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity; //Bu satır, HTTP yanıtlarını kapsülleyen ve HTTP durum kodu, başlıklar ve içerik (body) gibi bileşenleri içeren bir ResponseEntity sınıfını projeye dahil eder. Bu, metotların daha esnek ve özelleştirilebilir HTTP yanıtları döndürmesine olanak tanır.
 import java.util.List;
+import com.berru.app.springbooth2.exception.NotFoundException;
+
 
 @Service //Spring, bu sınıfı bir Bean olarak yönetir ve bu sınıfın iş mantığını içerdiğini gösterir.  Bean, Spring tarafından oluşturulan, yönetilen ve yaşam döngüsü kontrol edilen bir nesnedir.
 public class GenreService {
@@ -38,7 +40,7 @@ public class GenreService {
     public ResponseEntity<Genre> getById(int id) {
         return genreRepository.findById(id)
                 .map(genre -> ResponseEntity.ok(genre))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                .orElseThrow(() -> new NotFoundException("Genre not found"));
     }
 
 
@@ -49,7 +51,7 @@ public class GenreService {
             Genre updatedGenre = genreRepository.save(genre);
             return ResponseEntity.ok(updatedGenre);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        throw new NotFoundException("Genre not found");
     }
 
     //delete metodu, verilen id'ye sahip Genre nesnesini veritabanından siler.
@@ -58,7 +60,7 @@ public class GenreService {
             genreRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        throw new NotFoundException("Genre not found");
     }
 
 

@@ -1,10 +1,10 @@
-package com.berru.app.springbooth2.controllers;
+package com.berru.app.springbooth2.controller;
 
 //İstemci tarafından gelen ilk requesti algılayan katman controllerdir
 
 
-import com.berru.app.springbooth2.entities.Genre;
-import com.berru.app.springbooth2.services.GenreService;
+import com.berru.app.springbooth2.entity.Genre;
+import com.berru.app.springbooth2.service.GenreService;
 import org.springframework.http.ResponseEntity; //Bu satır, HTTP yanıtlarını kapsülleyen ResponseEntity sınıfını projeye dahil eder. Bu sınıf, HTTP yanıtını (status code, body, headers) temsil eder ve HTTP isteklerine yanıt verirken kullanılır.
 import org.springframework.web.bind.annotation.*;
 
