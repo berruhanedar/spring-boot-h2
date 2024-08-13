@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.List;
 
 
 @Entity
@@ -22,7 +21,7 @@ public class Music {
     @JoinColumn(name = "genre_id") // @JoinColumn(name = "genre_id"): genre alanı için veritabanında genre_id adında bir foreign key sütunu oluşturur.
     //hangi sütunun yabancı anahtar (foreign key) olarak kullanılacağını belirtmek için kullanılır
     @JsonBackReference
-    private com.berru.app.springbooth2.entity.Genre genre;
+    private Genre genre;
 
     // Bu metot, genre name'i JSON çıktısında ek olarak göstermeyi sağlar
     @JsonProperty("genre_name")

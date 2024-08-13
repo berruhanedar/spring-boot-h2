@@ -11,3 +11,4 @@ public interface MusicRepository extends JpaRepository<Music, Integer> {
 }
 
 //findByGenreId(int genreId) metodu, belirli bir genreId'ye sahip olan Music nesnelerini döndürür.
+

@@ -3,8 +3,13 @@ package com.berru.app.springbooth2.controller;
 //İstemci tarafından gelen ilk requesti algılayan katman controllerdir
 
 
+import com.berru.app.springbooth2.dto.DeleteResponseDTO;
+import com.berru.app.springbooth2.dto.GenreDTO;
+import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
+import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.service.GenreService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity; //Bu satır, HTTP yanıtlarını kapsülleyen ResponseEntity sınıfını projeye dahil eder. Bu sınıf, HTTP yanıtını (status code, body, headers) temsil eder ve HTTP isteklerine yanıt verirken kullanılır.
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +28,10 @@ public class GenreController {
     }
 
     @PostMapping
-    public ResponseEntity<Genre> save(@RequestBody Genre genre) {
-        return genreService.save(genre);
+    public ResponseEntity<GenreDTO> save(@RequestBody @Valid NewGenreRequestDTO newGenreRequestDTO) {
+        return genreService.save(newGenreRequestDTO);
     }
+
 
     @GetMapping
     public ResponseEntity<List<Genre>> list() {
@@ -33,16 +39,17 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Genre> getById(@PathVariable int id) {
+    public ResponseEntity<GenreDTO> getById(@PathVariable int id) {
         return genreService.getById(id);
     }
-
     @PutMapping("/{id}")
-    public ResponseEntity<Genre> update(@PathVariable int id, @RequestBody Genre genre) {
-        return genreService.update(id, genre);
+    public ResponseEntity<GenreDTO> update(@PathVariable int id,
+                                           @RequestBody @Valid UpdateGenreRequestDTO updateGenreRequestDTO) {
+        return genreService.update(id, updateGenreRequestDTO);
     }
 
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DeleteResponseDTO> delete(@PathVariable int id) {
         return genreService.delete(id);
     }
 
