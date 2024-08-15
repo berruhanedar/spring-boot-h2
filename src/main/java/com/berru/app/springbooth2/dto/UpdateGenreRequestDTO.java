@@ -10,6 +10,6 @@ public class UpdateGenreRequestDTO {
     //@Valid, bir nesnenin belirli kurallara göre doğruluğunu kontrol eder. Örneğin, bir DTO (Data Transfer Object) sınıfındaki alanlar üzerinde @NotBlank, @Pattern gibi doğrulama anotasyonları kullanıldığında, @Valid bu doğrulama kurallarını tetikler.
 
     @NotNull(message = "name is mandatory")
-    private String name ;
+    private String name;
 
 }

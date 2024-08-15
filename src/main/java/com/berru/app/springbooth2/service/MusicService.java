@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class MusicService {
         Genre genre = genreRepository.findById(newMusicRequestDTO.getGenreId())
                 .orElseThrow(() -> new NotFoundException("Genre not found"));
 
+        //Nesne Oluşturma Sürecini Basitleştirmek
         // Lombok Builder ile DTO'dan bir Music nesnesi oluşturur
         Music music = Music.builder()
                 .name(newMusicRequestDTO.getName())
@@ -45,6 +47,7 @@ public class MusicService {
     }
 
 
+    //dış dünyaya veri gönderirken yapılan bir işlemdir.
     private MusicDTO convertToDTO(Music music) {
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(music.getId());
@@ -77,18 +80,29 @@ public class MusicService {
 
     // Belirli bir müziği ID'ye göre güncelle
     public ResponseEntity<MusicDTO> update(int id, @Valid UpdateMusicRequestDTO updateMusicRequestDTO) {
-        Music existingMusic = musicRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Music not found"));
+        try {
+            // Music ID kontrolü
+            Music existingMusic = musicRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Music not found"));
 
-        existingMusic.setName(updateMusicRequestDTO.getName());
-        Genre genre = genreRepository.findById(updateMusicRequestDTO.getGenreId())
-                .orElseThrow(() -> new NotFoundException("Genre not found"));
+            // Genre ID kontrolü
+            Genre genre = genreRepository.findById(updateMusicRequestDTO.getGenreId())
+                    .orElseThrow(() -> new NotFoundException("Genre not found"));
 
-        existingMusic.setGenre(genre);
-        Music updatedMusic = musicRepository.save(existingMusic);
+            // Müzik adını güncelleme
+            existingMusic.setName(updateMusicRequestDTO.getName());
+            existingMusic.setGenre(genre);
 
-        return ResponseEntity.ok(convertToDTO(updatedMusic));
+            // Müzik kaydını güncelleme
+            Music updatedMusic = musicRepository.save(existingMusic);
+
+            return ResponseEntity.ok(convertToDTO(updatedMusic));
+        } catch (IllegalArgumentException ex) {
+            // İstemci hatası durumunda 400 Bad Request döndürülmesi
+            return ResponseEntity.badRequest().body(null);
+        }
     }
+
 
 
     // Müzik silme işlemi
@@ -97,7 +111,7 @@ public class MusicService {
             musicRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        throw new NotFoundException("Music not found");
     }
 
     // Belirli bir genre'e ait müzikleri getirme işlemi

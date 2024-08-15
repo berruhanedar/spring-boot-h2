@@ -1,6 +1,6 @@
 package com.berru.app.springbooth2.controller;
 
-import com.berru.app.springbooth2.dto.DeleteGenreResponseDTO;
+import com.berru.app.springbooth2.dto.DeleteGenreRequestDTO;
 import com.berru.app.springbooth2.dto.GenreDTO;
 import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
 import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
@@ -46,7 +46,7 @@ public class GenreController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DeleteGenreResponseDTO> delete(@PathVariable int id) {
+    public ResponseEntity<DeleteGenreRequestDTO> delete(@PathVariable int id) {
         // Silme işlemi sonrası, DeleteResponseDTO döndürülür
         return genreService.delete(id);
     }

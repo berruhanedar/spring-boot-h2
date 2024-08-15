@@ -44,6 +44,15 @@ public class MusicController {
         return musicService.delete(id);
     }
 
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MusicDTO> update(@PathVariable int id, @Valid @RequestBody UpdateMusicRequestDTO updateMusicRequestDTO) {
+        return musicService.update(id, updateMusicRequestDTO);
+    }
+
+
+
+
     // Belirli bir genre'e ait müzikleri getir
     @GetMapping("/genre/{genreId}")
     public ResponseEntity<List<MusicDTO>> getByGenre(@PathVariable int genreId) {

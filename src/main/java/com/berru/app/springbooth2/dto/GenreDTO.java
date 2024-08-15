@@ -9,12 +9,8 @@ import java.util.List;
 public class GenreDTO {
     private int id;
     private String name;
-    private List<MusicDTO> musics;  // Müzikleri içerir
+    private List<MusicDTO> musics;
 
-    // Getters ve Setters
 }
 
-
-
-//Amaç: Genellikle uygulamanın farklı katmanları arasında veri taşırken veya API yanıtları oluştururken kullanılır.
 

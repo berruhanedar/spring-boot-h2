@@ -20,7 +20,7 @@ public class Music {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(nullable = false , unique=true )
+    @Column(nullable = false, unique = true)
     private String name;
 
     @ManyToOne

@@ -1,6 +1,6 @@
 package com.berru.app.springbooth2.service;
 
-import com.berru.app.springbooth2.dto.DeleteGenreResponseDTO;
+import com.berru.app.springbooth2.dto.DeleteGenreRequestDTO;
 import com.berru.app.springbooth2.dto.GenreDTO;
 import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
 import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
@@ -10,8 +10,10 @@ import com.berru.app.springbooth2.mapper.GenreMapper; // MapStruct Mapper sını
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import com.berru.app.springbooth2.exception.NotFoundException;
 
 @Service
@@ -56,12 +58,13 @@ public class GenreService {
         return ResponseEntity.ok(genreMapper.toDto(updatedGenre));
     }
 
-    public ResponseEntity<DeleteGenreResponseDTO> delete(int id) {
+    public ResponseEntity<DeleteGenreRequestDTO> delete(int id) {
         if (genreRepository.existsById(id)) {
             genreRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body(new DeleteGenreResponseDTO("Genre deleted successfully"));
+            DeleteGenreRequestDTO response = new DeleteGenreRequestDTO(id, "Genre deleted successfully");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         }
         throw new NotFoundException("Genre not found");
     }
+
 }

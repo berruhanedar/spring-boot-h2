@@ -5,7 +5,6 @@ import lombok.Data;
 import jakarta.validation.constraints.Pattern;
 
 
-
 @Data
 public class UpdateMusicRequestDTO {
     @Pattern(regexp = "^[a-zA-Z ]+$", message = "Music name can only contain letters and spaces.")
