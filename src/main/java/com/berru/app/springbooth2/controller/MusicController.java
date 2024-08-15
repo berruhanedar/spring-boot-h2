@@ -1,4 +1,4 @@
-package com.berru.app.springbooth2.controllers;
+package com.berru.app.springbooth2.controller;
 
 import com.berru.app.springbooth2.dto.MusicDTO;
 import com.berru.app.springbooth2.dto.NewMusicRequestDTO;

@@ -32,16 +32,18 @@ public class MusicService {
         Genre genre = genreRepository.findById(newMusicRequestDTO.getGenreId())
                 .orElseThrow(() -> new NotFoundException("Genre not found"));
 
-        // DTO'dan bir Music nesnesi oluşturur
-        Music music = new Music();
-        music.setName(newMusicRequestDTO.getName());
-        music.setGenre(genre);
+        // Lombok Builder ile DTO'dan bir Music nesnesi oluşturur
+        Music music = Music.builder()
+                .name(newMusicRequestDTO.getName())
+                .genre(genre)
+                .build();
 
         // Müzik nesnesini veritabanına kaydeder
         Music savedMusic = musicRepository.save(music);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedMusic));
     }
+
 
     private MusicDTO convertToDTO(Music music) {
         MusicDTO musicDTO = new MusicDTO();

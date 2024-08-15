@@ -4,10 +4,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Data
+@Builder // Lombok Builder Anotasyonu
+@AllArgsConstructor // Tüm alanlar için constructor
+@NoArgsConstructor  // Parametresiz constructor
 
 public class Music {
     @Id
@@ -15,19 +21,15 @@ public class Music {
     private int id;
 
     @Column(nullable = false , unique=true )
-    private String name ;
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "genre_id") // @JoinColumn(name = "genre_id"): genre alanı için veritabanında genre_id adında bir foreign key sütunu oluşturur.
-    //hangi sütunun yabancı anahtar (foreign key) olarak kullanılacağını belirtmek için kullanılır
+    @JoinColumn(name = "genre_id")
     @JsonBackReference
     private Genre genre;
 
-    // Bu metot, genre name'i JSON çıktısında ek olarak göstermeyi sağlar
     @JsonProperty("genre_name")
     public String getGenreName() {
         return genre != null ? genre.getName() : null;
     }
-
-
 }

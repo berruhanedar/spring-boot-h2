@@ -1,8 +1,8 @@
 package com.berru.app.springbooth2.dto;
 
-public class DeleteResponseDTO {private String message;
+public class DeleteGenreResponseDTO {private String message;
 
-    public DeleteResponseDTO(String message) {
+    public DeleteGenreResponseDTO(String message) {
         this.message = message;
     }
 
