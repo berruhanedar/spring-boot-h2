@@ -1,7 +1,7 @@
 package com.berru.app.springbooth2.service;
 
 import com.berru.app.springbooth2.dto.MusicDTO;
-import com.berru.app.springbooth2.dto.MusicPaginationResponse;
+import com.berru.app.springbooth2.dto.PaginationResponse;
 import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
 import com.berru.app.springbooth2.dto.UpdateMusicRequestDTO;
 import com.berru.app.springbooth2.exception.NotFoundException;
@@ -51,7 +51,7 @@ public class MusicService {
         return musicDTO;
     }
 
-    public MusicPaginationResponse list(int pageNo, int pageSize) {
+    public PaginationResponse list(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Music> musicPage = musicRepository.findAll(pageable);
 
@@ -59,7 +59,7 @@ public class MusicService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        MusicPaginationResponse musicPaginationResponse = new MusicPaginationResponse();
+        PaginationResponse musicPaginationResponse = new PaginationResponse();
         musicPaginationResponse.setContent(musicDTOList);
         musicPaginationResponse.setPageNo(musicPage.getNumber());
         musicPaginationResponse.setPageSize(musicPage.getSize());

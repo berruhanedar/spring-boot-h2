@@ -1,9 +1,6 @@
 package com.berru.app.springbooth2.controller;
 
-import com.berru.app.springbooth2.dto.DeleteGenreRequestDTO;
-import com.berru.app.springbooth2.dto.GenreDTO;
-import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
-import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.service.GenreService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +24,10 @@ public class GenreController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GenreDTO>> list() {
-        // Service katmanında listelemenin ardından MapStruct ile DTO'ya dönüştürülmüş liste döner
-        return genreService.list();
+    public ResponseEntity<PaginationResponse<GenreDTO>> list(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return genreService.listPaginated(pageNo, pageSize);
     }
 
     @GetMapping("/{id}")

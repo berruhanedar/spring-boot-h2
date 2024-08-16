@@ -7,9 +7,13 @@ import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.repository.GenreRepository;
 import com.berru.app.springbooth2.mapper.GenreMapper; // MapStruct Mapper sınıfını dahil ettik
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import com.berru.app.springbooth2.dto.PaginationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +37,23 @@ public class GenreService {
         return ResponseEntity.status(HttpStatus.CREATED).body(genreMapper.toDto(savedGenre)); // Entity'den DTO'ya dönüşüm
     }
 
-    public ResponseEntity<List<GenreDTO>> list() {
-        List<Genre> genres = genreRepository.findAll();
-        List<GenreDTO> genreDTOs = genres.stream()
+    public ResponseEntity<PaginationResponse<GenreDTO>> listPaginated(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Genre> genrePage = genreRepository.findAll(pageable);
+
+        List<GenreDTO> genreDTOList = genrePage.getContent().stream()
                 .map(genreMapper::toDto)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(genreDTOs);
+
+        PaginationResponse<GenreDTO> genrePaginationResponse = new PaginationResponse<>();
+        genrePaginationResponse.setContent(genreDTOList);
+        genrePaginationResponse.setPageNo(genrePage.getNumber());
+        genrePaginationResponse.setPageSize(genrePage.getSize());
+        genrePaginationResponse.setTotalElements(genrePage.getTotalElements());
+        genrePaginationResponse.setTotalPages(genrePage.getTotalPages());
+        genrePaginationResponse.setLast(genrePage.isLast());
+
+        return ResponseEntity.ok(genrePaginationResponse);
     }
 
 
