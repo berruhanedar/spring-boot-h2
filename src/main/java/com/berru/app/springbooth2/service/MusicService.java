@@ -1,9 +1,6 @@
 package com.berru.app.springbooth2.service;
 
-import com.berru.app.springbooth2.dto.MusicDTO;
-import com.berru.app.springbooth2.dto.PaginationResponse;
-import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
-import com.berru.app.springbooth2.dto.UpdateMusicRequestDTO;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
@@ -96,13 +93,17 @@ public class MusicService {
         }
     }
 
-    public ResponseEntity<Void> delete(int id) {
+    public ResponseEntity<DeleteMusicResponseDTO> delete(int id) {
         if (musicRepository.existsById(id)) {
             musicRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+            DeleteMusicResponseDTO response = new DeleteMusicResponseDTO("Music deleted successfully");
+            return ResponseEntity.ok(response); // HTTP 200 OK ile yanıt döndürür
         }
         throw new NotFoundException("Music not found");
     }
+
+
+
 
     public ResponseEntity<List<MusicDTO>> getByGenre(int genreId) {
         List<Music> musics = musicRepository.findByGenreId(genreId);
@@ -111,4 +112,9 @@ public class MusicService {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(musicDTOs);
     }
+
+
+
+
+
 }

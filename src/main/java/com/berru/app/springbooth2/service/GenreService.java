@@ -1,9 +1,6 @@
 package com.berru.app.springbooth2.service;
 
-import com.berru.app.springbooth2.dto.DeleteGenreRequestDTO;
-import com.berru.app.springbooth2.dto.GenreDTO;
-import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
-import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.repository.GenreRepository;
 import com.berru.app.springbooth2.mapper.GenreMapper; // MapStruct Mapper sınıfını dahil ettik
@@ -13,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
-import com.berru.app.springbooth2.dto.PaginationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,13 +69,14 @@ public class GenreService {
         return ResponseEntity.ok(genreMapper.toDto(updatedGenre));
     }
 
-    public ResponseEntity<DeleteGenreRequestDTO> delete(int id) {
+    public ResponseEntity<DeleteGenreResponseDTO> delete(int id) {
         if (genreRepository.existsById(id)) {
             genreRepository.deleteById(id);
-            DeleteGenreRequestDTO response = new DeleteGenreRequestDTO(id, "Genre deleted successfully");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+            DeleteGenreResponseDTO response = new DeleteGenreResponseDTO("Genre deleted successfully");
+            return ResponseEntity.ok(response); // HTTP 200 OK ile yanıt döndürür
         }
         throw new NotFoundException("Genre not found");
     }
+
 
 }

@@ -1,9 +1,6 @@
 package com.berru.app.springbooth2.controller;
 
-import com.berru.app.springbooth2.dto.MusicDTO;
-import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
-import com.berru.app.springbooth2.dto.UpdateMusicRequestDTO;
-import com.berru.app.springbooth2.dto.PaginationResponse;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.service.MusicService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -40,7 +37,7 @@ public class MusicController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<DeleteMusicResponseDTO> delete(@PathVariable int id) {
         return musicService.delete(id);
     }
 

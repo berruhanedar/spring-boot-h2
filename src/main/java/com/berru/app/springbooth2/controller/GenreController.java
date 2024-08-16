@@ -43,9 +43,13 @@ public class GenreController {
         return genreService.update(id, updateGenreRequestDTO);
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<DeleteGenreRequestDTO> delete(@PathVariable int id) {
-        // Silme işlemi sonrası, DeleteResponseDTO döndürülür
+    public ResponseEntity<DeleteGenreResponseDTO> delete(@PathVariable int id) {
         return genreService.delete(id);
     }
+
+
+
+
 }
