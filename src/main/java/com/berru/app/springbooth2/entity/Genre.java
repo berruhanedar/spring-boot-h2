@@ -9,6 +9,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "genre", indexes = {
+        @Index(name = "idx_genre_name", columnList = "name"),
+})
+
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
