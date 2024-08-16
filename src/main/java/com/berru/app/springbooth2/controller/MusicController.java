@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/musics")
 public class MusicController {
+
     private final MusicService musicService;
 
     public MusicController(MusicService musicService) {
@@ -25,10 +26,10 @@ public class MusicController {
 
     @GetMapping
     public ResponseEntity<PaginationResponse> getMusics(
-            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+            @RequestParam(value = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
     ) {
-        return new ResponseEntity<>(musicService.list(pageNo, pageSize), HttpStatus.OK);
+        return ResponseEntity.ok(musicService.list(pageNo, pageSize));
     }
 
     @GetMapping("/{id}")
@@ -42,7 +43,7 @@ public class MusicController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MusicDTO> update(@PathVariable int id, @Valid @RequestBody UpdateMusicRequestDTO updateMusicRequestDTO) {
+    public ResponseEntity<MusicDTO> update(@PathVariable int id, @RequestBody @Valid UpdateMusicRequestDTO updateMusicRequestDTO) {
         return musicService.update(id, updateMusicRequestDTO);
     }
 

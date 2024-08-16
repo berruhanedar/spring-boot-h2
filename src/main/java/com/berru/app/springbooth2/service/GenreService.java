@@ -2,25 +2,21 @@ package com.berru.app.springbooth2.service;
 
 import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.entity.Genre;
+import com.berru.app.springbooth2.mapper.GenreMapper;
 import com.berru.app.springbooth2.repository.GenreRepository;
-import com.berru.app.springbooth2.mapper.GenreMapper; // MapStruct Mapper sınıfını dahil ettik
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import com.berru.app.springbooth2.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.berru.app.springbooth2.exception.NotFoundException;
 
 @Service
 public class GenreService {
 
     private final GenreRepository genreRepository;
-    private final GenreMapper genreMapper; // GenreMapper bean'ini ekledik
+    private final GenreMapper genreMapper;
 
     public GenreService(GenreRepository genreRepository, GenreMapper genreMapper) {
         this.genreRepository = genreRepository;
@@ -28,30 +24,33 @@ public class GenreService {
     }
 
     public ResponseEntity<GenreDTO> save(NewGenreRequestDTO newGenreRequestDTO) {
-        Genre genre = genreMapper.toEntity(newGenreRequestDTO); // MapStruct ile DTO'dan Entity'ye dönüşüm
+        Genre genre = genreMapper.toEntity(newGenreRequestDTO);
         Genre savedGenre = genreRepository.save(genre);
-        return ResponseEntity.status(HttpStatus.CREATED).body(genreMapper.toDto(savedGenre)); // Entity'den DTO'ya dönüşüm
+        return ResponseEntity.status(HttpStatus.CREATED).body(genreMapper.toDto(savedGenre));
     }
 
     public ResponseEntity<PaginationResponse<GenreDTO>> listPaginated(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Genre> genrePage = genreRepository.findAll(pageable);
+        List<Genre> genres = genreRepository.findAllWithMusics(); // Güncellenmiş metod
 
-        List<GenreDTO> genreDTOList = genrePage.getContent().stream()
+        // Listeyi sayfalama yapmak için Stream API kullanarak dönüşüm yapıyoruz
+        int start = Math.min(pageNo * pageSize, genres.size());
+        int end = Math.min(start + pageSize, genres.size());
+        List<Genre> pagedGenres = genres.subList(start, end);
+
+        List<GenreDTO> genreDTOList = pagedGenres.stream()
                 .map(genreMapper::toDto)
                 .collect(Collectors.toList());
 
         PaginationResponse<GenreDTO> genrePaginationResponse = new PaginationResponse<>();
         genrePaginationResponse.setContent(genreDTOList);
-        genrePaginationResponse.setPageNo(genrePage.getNumber());
-        genrePaginationResponse.setPageSize(genrePage.getSize());
-        genrePaginationResponse.setTotalElements(genrePage.getTotalElements());
-        genrePaginationResponse.setTotalPages(genrePage.getTotalPages());
-        genrePaginationResponse.setLast(genrePage.isLast());
+        genrePaginationResponse.setPageNo(pageNo);
+        genrePaginationResponse.setPageSize(pageSize);
+        genrePaginationResponse.setTotalElements((long) genres.size());
+        genrePaginationResponse.setTotalPages((int) Math.ceil((double) genres.size() / pageSize));
+        genrePaginationResponse.setLast(end == genres.size());
 
         return ResponseEntity.ok(genrePaginationResponse);
     }
-
 
     public ResponseEntity<GenreDTO> getById(int id) {
         Genre genre = genreRepository.findById(id)
@@ -63,7 +62,7 @@ public class GenreService {
         Genre genre = genreRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Genre not found"));
 
-        genreMapper.updateGenreFromDto(updateGenreRequestDTO, genre); // DTO'dan Entity'ye güncelleme
+        genreMapper.updateGenreFromDto(updateGenreRequestDTO, genre);
         Genre updatedGenre = genreRepository.save(genre);
 
         return ResponseEntity.ok(genreMapper.toDto(updatedGenre));
@@ -73,10 +72,8 @@ public class GenreService {
         if (genreRepository.existsById(id)) {
             genreRepository.deleteById(id);
             DeleteGenreResponseDTO response = new DeleteGenreResponseDTO("Genre deleted successfully");
-            return ResponseEntity.ok(response); // HTTP 200 OK ile yanıt döndürür
+            return ResponseEntity.ok(response);
         }
         throw new NotFoundException("Genre not found");
     }
-
-
 }

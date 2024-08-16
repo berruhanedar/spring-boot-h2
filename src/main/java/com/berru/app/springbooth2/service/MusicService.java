@@ -1,11 +1,12 @@
 package com.berru.app.springbooth2.service;
 
 import com.berru.app.springbooth2.dto.*;
-import com.berru.app.springbooth2.exception.NotFoundException;
-import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
-import com.berru.app.springbooth2.repository.GenreRepository;
+import com.berru.app.springbooth2.entity.Genre;
+import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.repository.MusicRepository;
+import com.berru.app.springbooth2.repository.GenreRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,13 +45,13 @@ public class MusicService {
         MusicDTO musicDTO = new MusicDTO();
         musicDTO.setId(music.getId());
         musicDTO.setName(music.getName());
-        musicDTO.setGenreName(music.getGenreName());
+        musicDTO.setGenreName(music.getGenre() != null ? music.getGenre().getName() : null);
         return musicDTO;
     }
 
     public PaginationResponse list(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Music> musicPage = musicRepository.findAll(pageable);
+        Page<Music> musicPage = musicRepository.findAllWithGenre(pageable); // Güncellenmiş metod
 
         List<MusicDTO> musicDTOList = musicPage.getContent().stream()
                 .map(this::convertToDTO)
@@ -68,17 +69,23 @@ public class MusicService {
     }
 
     public ResponseEntity<MusicDTO> getById(int id) {
-        Music music = musicRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Music not found"));
-
+        Music music = musicRepository.findByIdWithGenre(id);
+        if (music == null) {
+            throw new NotFoundException("Music not found");
+        }
         return ResponseEntity.ok(convertToDTO(music));
     }
 
+    // MusicService.java
+    @Transactional
     public ResponseEntity<MusicDTO> update(int id, UpdateMusicRequestDTO updateMusicRequestDTO) {
         try {
-            Music existingMusic = musicRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("Music not found"));
+            Music existingMusic = musicRepository.findByIdWithGenre(id);
+            if (existingMusic == null) {
+                throw new NotFoundException("Music not found");
+            }
 
+            // Genre kaydını kontrol et
             Genre genre = genreRepository.findById(updateMusicRequestDTO.getGenreId())
                     .orElseThrow(() -> new NotFoundException("Genre not found"));
 
@@ -93,28 +100,21 @@ public class MusicService {
         }
     }
 
+    @Transactional
     public ResponseEntity<DeleteMusicResponseDTO> delete(int id) {
         if (musicRepository.existsById(id)) {
             musicRepository.deleteById(id);
             DeleteMusicResponseDTO response = new DeleteMusicResponseDTO("Music deleted successfully");
-            return ResponseEntity.ok(response); // HTTP 200 OK ile yanıt döndürür
+            return ResponseEntity.ok(response);
         }
         throw new NotFoundException("Music not found");
     }
 
-
-
-
     public ResponseEntity<List<MusicDTO>> getByGenre(int genreId) {
-        List<Music> musics = musicRepository.findByGenreId(genreId);
+        List<Music> musics = musicRepository.findByGenreIdWithGenre(genreId); // Güncellenmiş metod
         List<MusicDTO> musicDTOs = musics.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(musicDTOs);
     }
-
-
-
-
-
 }

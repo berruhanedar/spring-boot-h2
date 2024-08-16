@@ -8,13 +8,11 @@ import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Data
 @Builder // Lombok Builder Anotasyonu
 @AllArgsConstructor // Tüm alanlar için constructor
 @NoArgsConstructor  // Parametresiz constructor
-
 public class Music {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,12 +21,13 @@ public class Music {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     @JsonBackReference
     private Genre genre;
 
-    @JsonProperty("genre_name")
+
+    @JsonProperty("genre_name") // JSON'da genre_name olarak döner
     public String getGenreName() {
         return genre != null ? genre.getName() : null;
     }

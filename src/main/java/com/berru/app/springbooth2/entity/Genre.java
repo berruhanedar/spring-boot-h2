@@ -17,7 +17,7 @@ public class Genre {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "genre", fetch = FetchType.EAGER) //// fetch türünü EAGER yaptık
     @JsonManagedReference
     private List<Music> musics;
 }
