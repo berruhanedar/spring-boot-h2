@@ -13,6 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder // Lombok Builder Anotasyonu
 @AllArgsConstructor // Tüm alanlar için constructor
 @NoArgsConstructor  // Parametresiz constructor
+@Table(name = "music", indexes = {
+        @Index(name = "idx_music_name", columnList = "name"),
+        @Index(name = "idx_music_genre_id", columnList = "genre_id")
+})
+
 public class Music {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
