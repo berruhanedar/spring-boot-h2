@@ -205,7 +205,30 @@ public class GenreServiceTest {
         verify(genreMapper).toDto(updatedGenre);
     }
 
-    
+    @Test
+    public void whenUpdateCalledWithInvalidId_itShouldThrowNotFoundException() {
+        int id=1;
+
+        UpdateGenreRequestDTO updateGenreRequestDTO= new UpdateGenreRequestDTO();
+        updateGenreRequestDTO.setName("New Name");
+
+        when(genreRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            genreService.update(id, updateGenreRequestDTO);
+        });
+        assertEquals("Genre not found", thrown.getMessage());
+
+        // Verify
+        verify(genreRepository).findById(id);
+        verify(genreMapper, never()).updateGenreFromDto(any(UpdateGenreRequestDTO.class), any(Genre.class));
+        verify(genreRepository, never()).save(any(Genre.class));
+        verify(genreMapper, never()).toDto(any(Genre.class));
+    }
+
+
+
+
 
 
 
