@@ -1,10 +1,7 @@
 package com.berru.app.springbooth2.service;
 
 
-import com.berru.app.springbooth2.dto.GenreDTO;
-import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
-import com.berru.app.springbooth2.dto.PaginationResponse;
-import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.mapper.GenreMapper;
@@ -224,6 +221,25 @@ public class GenreServiceTest {
         verify(genreMapper, never()).updateGenreFromDto(any(UpdateGenreRequestDTO.class), any(Genre.class));
         verify(genreRepository, never()).save(any(Genre.class));
         verify(genreMapper, never()).toDto(any(Genre.class));
+    }
+
+    @Test
+    public void whenDeleteCalledWithValidId_itShouldReturnSuccessMessage() {
+        int id=1;
+        when(genreRepository.existsById(id)).thenReturn(true);
+
+        DeleteGenreResponseDTO expectedResponse = new DeleteGenreResponseDTO("Genre deleted successfully");
+
+        // Act
+        ResponseEntity<DeleteGenreResponseDTO> response = genreService.delete(id);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+
+        // Verify
+        verify(genreRepository).existsById(id);
+        verify(genreRepository).deleteById(id);
     }
 
 
