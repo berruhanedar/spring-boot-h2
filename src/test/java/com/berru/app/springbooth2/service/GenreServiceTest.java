@@ -5,6 +5,7 @@ import com.berru.app.springbooth2.dto.GenreDTO;
 import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
 import com.berru.app.springbooth2.dto.PaginationResponse;
 import com.berru.app.springbooth2.entity.Genre;
+import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.mapper.GenreMapper;
 import com.berru.app.springbooth2.repository.GenreRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class GenreServiceTest {
 
@@ -150,6 +149,21 @@ public class GenreServiceTest {
         // Verify
         verify(genreRepository).findById(id);
         verify(genreMapper).toDto(genre);
+    }
+    @Test
+    public void whenGetByIdWithInvalidId_itShouldThrowNotFoundException() {
+        int id=1;  // id değişkenini burada tanımlıyoruz
+
+        when(genreRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            genreService.getById(id);
+        });
+        assertEquals("Genre not found", thrown.getMessage());
+
+        // Verify
+        verify(genreRepository).findById(id);
+        verify(genreMapper, never()).toDto(any(Genre.class));
     }
 
 
