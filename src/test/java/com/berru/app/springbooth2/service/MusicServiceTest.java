@@ -226,5 +226,21 @@ public class MusicServiceTest {
         verify(genreRepository).findById(updateMusicRequestDTO.getGenreId());
         verify(musicRepository).save(updatedMusic);
     }
+    @Test
+    public void whenUpdateCalledWithInvalidMusicId_itShouldThrowNotFoundException() {
+        int invalidMusicId=999;
+        UpdateMusicRequestDTO updateMusicRequestDTO=new UpdateMusicRequestDTO();
+        updateMusicRequestDTO.setName("Updated Song");
+        updateMusicRequestDTO.setGenreId(1);
+
+        // Mock davranışını ayarla
+        when(musicRepository.findByIdWithGenre(invalidMusicId)).thenReturn(null);
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            musicService.update(invalidMusicId, updateMusicRequestDTO);
+        });
+    }
+
 
 }
