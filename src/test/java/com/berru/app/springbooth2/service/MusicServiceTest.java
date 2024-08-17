@@ -98,6 +98,38 @@ public class MusicServiceTest {
         verify(musicRepository, never()).save(any(Music.class));
     }
 
+    @Test
+    public void whenGetByIdCalledWithValidId_itShouldReturnValidMusicDTO() {
+        int musicId=1;
+        Genre genre = new Genre();
+        genre.setId(1);
+        genre.setName("Rock");
+
+        Music music= Music.builder()
+                .id(musicId)
+                .name("Rock Song")
+                .genre(genre)
+                .build();
+
+        MusicDTO musicDTO=new MusicDTO();
+        musicDTO.setId(musicId);
+        musicDTO.setName("Rock Song");
+        musicDTO.setGenreName("Rock");
+
+        // Mock davranışlarını ayarlayın
+        when(musicRepository.findByIdWithGenre(musicId)).thenReturn(music);
+
+        // Act
+        ResponseEntity<MusicDTO> response = musicService.getById(musicId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(musicDTO, response.getBody());
+
+        // Verify
+        verify(musicRepository).findByIdWithGenre(musicId);
+    }
+
 
 
 }
