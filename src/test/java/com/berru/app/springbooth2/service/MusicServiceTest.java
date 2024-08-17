@@ -1,9 +1,6 @@
 package com.berru.app.springbooth2.service;
 
-import com.berru.app.springbooth2.dto.MusicDTO;
-import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
-import com.berru.app.springbooth2.dto.PaginationResponse;
-import com.berru.app.springbooth2.dto.UpdateMusicRequestDTO;
+import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
 import com.berru.app.springbooth2.exception.NotFoundException;
@@ -262,5 +259,23 @@ public class MusicServiceTest {
             musicService.update(musicId, updateMusicRequestDTO);
         });
     }
+
+    @Test
+    public void whenDeleteCalledWithValidId_itShouldReturnSuccessMessage() {
+        int musicId=1;
+        when(musicRepository.existsById(musicId)).thenReturn(true);
+
+        // Act
+        ResponseEntity<DeleteMusicResponseDTO> response = musicService.delete(musicId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Music deleted successfully", response.getBody().getMessage());
+
+        // Verify
+        verify(musicRepository).existsById(musicId);
+        verify(musicRepository).deleteById(musicId);
+    }
+
 
 }
