@@ -242,12 +242,18 @@ public class GenreServiceTest {
         verify(genreRepository).deleteById(id);
     }
 
+    @Test
+    public void whenDeleteCalledWithInvalidId_itShouldThrowNotFoundException() {
+        int id=1;
+        when(genreRepository.existsById(id)).thenReturn(false);
 
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            genreService.delete(id);
+        });
+        assertEquals("Genre not found", thrown.getMessage());
 
-
-
-
-
-
+        // Verify
+        verify(genreRepository).existsById(id);
+        verify(genreRepository, never()).deleteById(id);
+    }
 }
-
