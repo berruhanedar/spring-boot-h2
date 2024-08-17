@@ -2,6 +2,7 @@ package com.berru.app.springbooth2.service;
 
 import com.berru.app.springbooth2.dto.MusicDTO;
 import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
+import com.berru.app.springbooth2.dto.PaginationResponse;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
 import com.berru.app.springbooth2.exception.NotFoundException;
@@ -9,10 +10,14 @@ import com.berru.app.springbooth2.repository.GenreRepository;
 import com.berru.app.springbooth2.repository.MusicRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -130,6 +135,49 @@ public class MusicServiceTest {
         verify(musicRepository).findByIdWithGenre(musicId);
     }
 
+    @Test
+    public void whenListCalledWithValidPageRequest_itShouldReturnPaginatedMusicDTOs() {
+        int pageNo=0;
+        int pageSize=2;
 
+        Genre genre=new Genre();
+        genre.setId(1);
+        genre.setName("Rock");
+
+        List<Music> musics = List.of(
+                Music.builder().id(1).name("Rock Song 1").genre(genre).build(),
+                Music.builder().id(2).name("Rock Song 2").genre(genre).build()
+        );
+
+        Page<Music> musicPage = new PageImpl<>(musics, PageRequest.of(pageNo, pageSize), 5);
+
+        MusicDTO musicDTO1=new MusicDTO();
+        musicDTO1.setId(1);
+        musicDTO1.setName("Rock Song 1");
+        musicDTO1.setGenreName("Rock");
+
+        MusicDTO musicDTO2=new MusicDTO();
+        musicDTO2.setId(2);
+        musicDTO2.setName("Rock Song 2");
+        musicDTO2.setGenreName("Rock");
+
+        PaginationResponse<MusicDTO> expectedResponse = new PaginationResponse<>();
+        expectedResponse.setContent(List.of(musicDTO1, musicDTO2));
+        expectedResponse.setPageNo(0);
+        expectedResponse.setPageSize(2);
+        expectedResponse.setTotalElements(5);
+        expectedResponse.setTotalPages(3); // 5 eleman, 2 eleman sayfada => 3 sayfa
+        expectedResponse.setLast(false); // İlk sayfa, son sayfa değil// Mock davranışlarını ayarlayın
+        when(musicRepository.findAllWithGenre(PageRequest.of(pageNo, pageSize))).thenReturn(musicPage);
+
+        // Act
+        PaginationResponse<MusicDTO> response = musicService.list(pageNo, pageSize);
+
+        // Assert
+        assertEquals(expectedResponse, response);
+
+        // Verify
+        verify(musicRepository).findAllWithGenre(PageRequest.of(pageNo, pageSize));
+    }
 
 }
