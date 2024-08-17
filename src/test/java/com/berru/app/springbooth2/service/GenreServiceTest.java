@@ -125,6 +125,35 @@ public class GenreServiceTest {
         assertEquals("Genre 4", content.get(1).getName());
     }
 
+    @Test
+    public void whenGetByIdWithValidId_itShouldReturnGenreDTO() {
+        int id=1;
+
+        Genre genre = new Genre();
+        genre.setId(id);
+        genre.setName("Heavy Metal");
+
+        GenreDTO genreDTO = new GenreDTO();
+        genreDTO.setId(id);
+        genreDTO.setName("Heavy Metal");
+
+        when(genreRepository.findById(id)).thenReturn(java.util.Optional.of(genre));
+        when(genreMapper.toDto(genre)).thenReturn(genreDTO);
+
+        // Act
+        ResponseEntity<GenreDTO> response = genreService.getById(id);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(genreDTO, response.getBody());
+
+        // Verify
+        verify(genreRepository).findById(id);
+        verify(genreMapper).toDto(genre);
+    }
+
+
+
 
 
 }
