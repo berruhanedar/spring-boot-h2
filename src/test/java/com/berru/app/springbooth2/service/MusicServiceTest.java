@@ -277,5 +277,37 @@ public class MusicServiceTest {
         verify(musicRepository).deleteById(musicId);
     }
 
+    @Test
+    public void whenDeleteCalledWithInvalidId_itShouldThrowNotFoundException() {
+        int musicId=1;
+        when(musicRepository.existsById(musicId)).thenReturn(false);
+
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            musicService.delete(musicId);
+        });
+        assertEquals("Music not found", thrown.getMessage());
+
+        // Verify
+        verify(musicRepository).existsById(musicId);
+        verify(musicRepository, never()).deleteById(musicId);
+    }
+
+
+    @Test
+    public void whenGetByIdCalledWithInvalidId_itShouldThrowNotFoundException() {
+        int invalidMusicId=999; // Var olmayan bir ID// Mock davranışlarını ayarlayın
+        when(musicRepository.findByIdWithGenre(invalidMusicId)).thenReturn(null);
+
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            musicService.getById(invalidMusicId);
+        });
+        assertEquals("Music not found", thrown.getMessage());
+
+        // Verify
+        verify(musicRepository).findByIdWithGenre(invalidMusicId);
+    }
+
+
+
 
 }
