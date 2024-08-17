@@ -3,6 +3,7 @@ package com.berru.app.springbooth2.service;
 import com.berru.app.springbooth2.dto.MusicDTO;
 import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
 import com.berru.app.springbooth2.dto.PaginationResponse;
+import com.berru.app.springbooth2.dto.UpdateMusicRequestDTO;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
 import com.berru.app.springbooth2.exception.NotFoundException;
@@ -178,6 +179,52 @@ public class MusicServiceTest {
 
         // Verify
         verify(musicRepository).findAllWithGenre(PageRequest.of(pageNo, pageSize));
+    }
+
+    @Test
+    public void whenUpdateCalledWithValidRequest_itShouldReturnUpdatedMusicDTO() {
+        int musicId=1;
+        UpdateMusicRequestDTO updateMusicRequestDTO=new UpdateMusicRequestDTO();
+        updateMusicRequestDTO.setName("Updated Rock Song");
+        updateMusicRequestDTO.setGenreId(2);
+
+        Genre genre= new Genre();
+        genre.setId(2);
+        genre.setName("Pop");
+
+        Music existingMusic= Music.builder()
+                .id(musicId)
+                .name("Rock Song")
+                .genre(new Genre())
+                .build();
+
+        Music updatedMusic= Music.builder()
+                .id(musicId)
+                .name("Updated Rock Song")
+                .genre(genre)
+                .build();
+
+        MusicDTO musicDTO=new MusicDTO();
+        musicDTO.setId(musicId);
+        musicDTO.setName("Updated Rock Song");
+        musicDTO.setGenreName("Pop");
+
+        // Mock davranışlarını ayarlayın
+        when(musicRepository.findByIdWithGenre(musicId)).thenReturn(existingMusic);
+        when(genreRepository.findById(updateMusicRequestDTO.getGenreId())).thenReturn(Optional.of(genre));
+        when(musicRepository.save(updatedMusic)).thenReturn(updatedMusic);
+
+        // Act
+        ResponseEntity<MusicDTO> response = musicService.update(musicId, updateMusicRequestDTO);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(musicDTO, response.getBody());
+
+        // Verify
+        verify(musicRepository).findByIdWithGenre(musicId);
+        verify(genreRepository).findById(updateMusicRequestDTO.getGenreId());
+        verify(musicRepository).save(updatedMusic);
     }
 
 }
