@@ -4,6 +4,7 @@ package com.berru.app.springbooth2.service;
 import com.berru.app.springbooth2.dto.GenreDTO;
 import com.berru.app.springbooth2.dto.NewGenreRequestDTO;
 import com.berru.app.springbooth2.dto.PaginationResponse;
+import com.berru.app.springbooth2.dto.UpdateGenreRequestDTO;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.mapper.GenreMapper;
@@ -166,6 +167,45 @@ public class GenreServiceTest {
         verify(genreMapper, never()).toDto(any(Genre.class));
     }
 
+    @Test
+    public void whenUpdateCalledWithValidRequest_itShouldReturnUpdatedGenreDTO() {
+        int id=1;
+
+        Genre existingGenre= new Genre();
+        existingGenre.setId(id);
+        existingGenre.setName("Old Name");
+
+        UpdateGenreRequestDTO updateGenreRequestDTO=new UpdateGenreRequestDTO();
+        updateGenreRequestDTO.setName("New Name");
+
+        Genre updatedGenre=new Genre();
+        updatedGenre.setId(id);
+        updatedGenre.setName("New Name");
+
+        GenreDTO updatedGenreDTO=new GenreDTO();
+        updatedGenreDTO.setId(id);
+        updatedGenreDTO.setName("New Name");
+
+        when(genreRepository.findById(id)).thenReturn(java.util.Optional.of(existingGenre));
+        doNothing().when(genreMapper).updateGenreFromDto(updateGenreRequestDTO, existingGenre);
+        when(genreRepository.save(existingGenre)).thenReturn(updatedGenre);
+        when(genreMapper.toDto(updatedGenre)).thenReturn(updatedGenreDTO);
+
+        // Act
+        ResponseEntity<GenreDTO> response = genreService.update(id, updateGenreRequestDTO);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updatedGenreDTO, response.getBody());
+
+        // Verify
+        verify(genreRepository).findById(id);
+        verify(genreMapper).updateGenreFromDto(updateGenreRequestDTO, existingGenre);
+        verify(genreRepository).save(existingGenre);
+        verify(genreMapper).toDto(updatedGenre);
+    }
+
+    
 
 
 
