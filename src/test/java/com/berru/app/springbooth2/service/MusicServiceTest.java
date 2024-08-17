@@ -242,5 +242,25 @@ public class MusicServiceTest {
         });
     }
 
+    @Test
+    public void whenUpdateCalledWithInvalidGenreId_itShouldThrowNotFoundException() {
+        int musicId=1;
+        UpdateMusicRequestDTO updateMusicRequestDTO= new UpdateMusicRequestDTO();
+        updateMusicRequestDTO.setName("Updated Song");
+        updateMusicRequestDTO.setGenreId(999);
+        Music existingMusic=new Music();
+        existingMusic.setId(musicId);
+        existingMusic.setName("Old Song");
+        existingMusic.setGenre(new Genre());
+
+        // Mock davranışlarını ayarla
+        when(musicRepository.findByIdWithGenre(musicId)).thenReturn(existingMusic);
+        when(genreRepository.findById(updateMusicRequestDTO.getGenreId())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NotFoundException.class, () -> {
+            musicService.update(musicId, updateMusicRequestDTO);
+        });
+    }
 
 }
