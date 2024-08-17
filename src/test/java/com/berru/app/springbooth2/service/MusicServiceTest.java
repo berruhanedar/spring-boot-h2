@@ -4,6 +4,7 @@ import com.berru.app.springbooth2.dto.MusicDTO;
 import com.berru.app.springbooth2.dto.NewMusicRequestDTO;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.entity.Music;
+import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.repository.GenreRepository;
 import com.berru.app.springbooth2.repository.MusicRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class MusicServiceTest {
@@ -74,6 +77,27 @@ public class MusicServiceTest {
         verify(genreRepository).findById(genreId);
         verify(musicRepository).save(music);
     }
+
+    @Test
+    public void whenSaveCalledWithInvalidGenreId_itShouldThrowNotFoundException() {
+        int genreId=1;
+        NewMusicRequestDTO newMusicRequestDTO=new NewMusicRequestDTO();
+        newMusicRequestDTO.setName("Rock Song");
+        newMusicRequestDTO.setGenreId(genreId);
+
+        // Mock davranışlarını ayarlayın
+        when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
+
+        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+            musicService.save(newMusicRequestDTO);
+        });
+        assertEquals("Genre not found", thrown.getMessage());
+
+        // Verify
+        verify(genreRepository).findById(genreId);
+        verify(musicRepository, never()).save(any(Music.class));
+    }
+
 
 
 }
