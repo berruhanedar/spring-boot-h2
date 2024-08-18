@@ -1,23 +1,23 @@
 package com.berru.app.springbooth2.service;
 
-
 import com.berru.app.springbooth2.dto.*;
 import com.berru.app.springbooth2.entity.Genre;
 import com.berru.app.springbooth2.exception.NotFoundException;
 import com.berru.app.springbooth2.mapper.GenreMapper;
 import com.berru.app.springbooth2.repository.GenreRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class GenreServiceTest {
@@ -27,7 +27,7 @@ public class GenreServiceTest {
     private GenreRepository genreRepository;
     private GenreMapper genreMapper;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
 
         genreRepository = Mockito.mock(GenreRepository.class);
@@ -35,6 +35,8 @@ public class GenreServiceTest {
 
         genreService = new GenreService(genreRepository, genreMapper);
     }
+
+
     @Test
     public void whenSaveCalledWithValidRequest_itShouldReturnValidGenreDTO() {
         NewGenreRequestDTO newGenreRequestDTO  = new NewGenreRequestDTO();
@@ -122,6 +124,7 @@ public class GenreServiceTest {
         assertEquals("Genre 4", content.get(1).getName());
     }
 
+
     @Test
     public void whenGetByIdWithValidId_itShouldReturnGenreDTO() {
         int id=1;
@@ -134,7 +137,8 @@ public class GenreServiceTest {
         genreDTO.setId(id);
         genreDTO.setName("Heavy Metal");
 
-        when(genreRepository.findById(id)).thenReturn(java.util.Optional.of(genre));
+        // Mocking the repository method to return Genre directly
+        when(genreRepository.findByIdWithMusics(id)).thenReturn(genre);
         when(genreMapper.toDto(genre)).thenReturn(genreDTO);
 
         // Act
@@ -145,22 +149,25 @@ public class GenreServiceTest {
         assertEquals(genreDTO, response.getBody());
 
         // Verify
-        verify(genreRepository).findById(id);
+        verify(genreRepository).findByIdWithMusics(id);
         verify(genreMapper).toDto(genre);
     }
+
+
     @Test
     public void whenGetByIdWithInvalidId_itShouldThrowNotFoundException() {
-        int id=1;  // id değişkenini burada tanımlıyoruz
+        int id = 1;  // id değişkenini burada tanımlıyoruz
 
-        when(genreRepository.findById(id)).thenReturn(java.util.Optional.empty());
+        // Mocking the repository method to return null for invalid ID
+        when(genreRepository.findByIdWithMusics(id)).thenReturn(null);
 
-        NotFoundException thrown= assertThrows(NotFoundException.class, () -> {
+        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
             genreService.getById(id);
         });
         assertEquals("Genre not found", thrown.getMessage());
 
         // Verify
-        verify(genreRepository).findById(id);
+        verify(genreRepository).findByIdWithMusics(id);
         verify(genreMapper, never()).toDto(any(Genre.class));
     }
 
@@ -222,6 +229,8 @@ public class GenreServiceTest {
         verify(genreRepository, never()).save(any(Genre.class));
         verify(genreMapper, never()).toDto(any(Genre.class));
     }
+
+
 
     @Test
     public void whenDeleteCalledWithValidId_itShouldReturnSuccessMessage() {

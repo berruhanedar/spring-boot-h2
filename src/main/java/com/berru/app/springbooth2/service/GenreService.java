@@ -53,8 +53,10 @@ public class GenreService {
     }
 
     public ResponseEntity<GenreDTO> getById(int id) {
-        Genre genre = genreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Genre not found"));
+        Genre genre = genreRepository.findByIdWithMusics(id);
+        if (genre == null) {
+            throw new NotFoundException("Genre not found");
+        }
         return ResponseEntity.ok(genreMapper.toDto(genre));
     }
 
